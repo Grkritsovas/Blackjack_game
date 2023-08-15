@@ -1,0 +1,119 @@
+game_on = True
+# Set up the player's chips
+while True:
+    try:
+        money = int(input("How many chips are you buying in with? "))
+        chips = Chips(money)
+        break
+    except:
+        print("Pick a valid integer!")
+while game_on:
+    dealer_busted = False
+    player_busted = False
+    playing = True
+    # Print an opening statement
+    print("Welcome to Blackjack!")
+    
+    # Create & shuffle the deck, deal two cards to each player
+    deck = Deck()
+    deck.shuffle()
+    player = Hand()
+    dealer = Hand()
+
+    for i in range(2):
+        player.add_card(deck.deal_one())
+        player.adjust_for_ace()
+        dealer.add_card(deck.deal_one())
+        dealer.adjust_for_ace()
+    
+    
+    # Prompt the Player for their bet
+    while True:
+        try:
+            bet = int(input("How many chips are you going to bet for this round? "))
+            if bet > money:
+                raise Exception("Sorry you don't have enough chips! You have: ", money)
+            else:
+                break
+        except TypeError:
+            print("Pick a valid integer that doesnt exceed your chips!")
+        except :
+            print("Sorry you don't have enough chips! You have: ", money)
+        
+            
+    # Show cards (but keep one dealer card hidden)
+    show_some(player ,dealer)
+    
+    while playing:
+        # Prompt for Player to Hit or Stand
+        while True:
+            play = input("Hit or stand? pick h for Hit and s to stand: ")
+            if play[0].lower() == 'h':
+                playing = True
+                break
+            elif play[0].lower() == 's':
+                playing = False
+                break
+            else:
+                print("Pick h or s")
+
+                
+        if hit_or_stand():
+            player.add_card(deck.deal_one())
+            player.adjust_for_ace()
+        
+        if player.value > 21:
+            chips.lost_bet(bet)
+            player_busted = True
+            break
+        
+        if playing == False:
+            break
+        # Show cards (but keep one dealer card hidden)
+        show_some(player, dealer)    
+            
+    # If Player hasn't busted, play Dealer's hand until Dealer reaches 17
+    while dealer.value < 17:
+        dealer.add_card(deck.deal_one())
+        dealer.adjust_for_ace()
+        
+    # Show all cards
+    show_all(player, dealer)
+    
+    # If the player busted, show a print statement
+    if player_busted:
+        print(f"Player value: {player.value} / dealer's value: {dealer.value}")
+        print("Player's value greater than 21, Player busts!")
+        
+    # Run different winning scenarios
+    if dealer.value > 21 and not player_busted:
+        chips.won_bet(bet)
+        dealer_busted = True
+        print(f"Player value: {player.value} / dealer's value: {dealer.value}")
+        print("Dealer's value greater than 21, Dealer busts!")
+        
+    if player.value > dealer.value and not player_busted and not dealer_busted:
+        chips.won_bet(bet)
+        print(f"Player value: {player.value} exceeds dealer's: {dealer.value}")
+        print("Player wins!")
+    elif player.value < dealer.value and not player_busted and not dealer_busted:
+        chips.lost_bet(bet)
+        print(f"Dealer's value: {dealer.value} exceeds player's: {player.value}")
+        print("Dealer wins!")
+    elif player.value == dealer.value :
+        push()
+        
+    # Inform Player of their chips total
+    print(f"Player's chips are now: {chips}")
+    
+    # Ask to play again
+    while True:
+        game_on =input("Would you like to play again? Choose Y or N: ")
+        if game_on[0].lower() == "y":
+            game_on = True
+            break
+        elif game_on[0].lower() == "n":
+            game_on = False
+            break
+        else:
+            print("Please choose a valid option 'y' for Yes or 'n' for No ")
