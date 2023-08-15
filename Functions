@@ -1,0 +1,28 @@
+def hit_or_stand():
+    global playing # To control an upcoming while Loop
+    
+    if playing:
+        return True
+    else:
+        return False
+
+def show_some(player, dealer):
+    # Show all but 1 of the dealer's cards
+    print("\nThe dealer's cards are: ")
+    print("First card hidden!")
+    print(dealer.cards[1])
+    
+    # Show all the player's cards
+    print("\nThe player's cards are: ", (*player.cards), sep = '\n')
+
+def show_all(player, dealer):
+    # Show all dealer's cards
+    print("\nThe dealer's cards are: ", (*dealer.cards), sep = '\n')
+    # Calculate and display value
+    print(f"\nValue of Dealer's hand is: {dealer.value}")
+    # Show all player's cards
+    print("\nThe player's cards are: ", (*player.cards), sep = '\n')
+    print(f"\nValue of Player's hand is: {player.value}")
+
+def push():
+    print('Dealer and player tie! PUSH')
